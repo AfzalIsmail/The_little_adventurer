@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+
+  <title>Game</title>
+
+  <link rel="stylesheet" href="game_stylesheet.css">
+
+</head>
+
+<body>
+
+  <h1 id="title">The little adventurer!</h1>
+
+<div id="menu">
+<p><a href="about.html">About</a> <a href="help.html">Help</a></p>
+
+
+</div>
+  	
+<div id="form">
+
+	<form action="gamephp.php" mathod="post" onsubmit="startGame()">
+	Please enter your name:<br>
+	<input type="text" name="name">
+	<!--
+	<input type="submit"  value="Submit">
+	-->
+	</form>
+
+<button class="button" id="button" onclick="startGame(), hide()">Start!</button>
+
+</div>
+
+
+
+  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+
+function startGame(){
+
+(function() {
+    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+    window.requestAnimationFrame = requestAnimationFrame;
+})();
+ 
+var canvas = document.createElement("canvas"),
+    ctx = canvas.getContext("2d"),
+    width = 800,
+    height = 600,
+    player = {
+      x : 5,
+      y : 540,
+      width : 40,
+      height : 60,
+      speed: 3,
+      velocityX: 0,
+      velocityY: 0,
+      jumping: false,
+      onGround: false
+    },
+    keys = [],
+    friction = 0.8,
+    gravity = 0.27;
+
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
+    document.body.appendChild(canvas);
+ 
+canvas.width = width;
+canvas.height = height;
+
+//level number
+var level = 1;
+
+//score
+var score = 0;
+
+//audio
+
+//background image
+var background = new Image();
+background.src = "BG.png";
+
+//background image for level 2
+var background2 = new Image();
+background2.src = "BG2.png";
+
+//ground image level 1
+var ground = new Image();
+ground.src = "ground.png";
+
+//ground image level 2
+
+var ground2 = new Image();
+ground2.src = "ground2.png";
+
+//player image
+var run = new Image();
+run.src = "runR.png";
+
+//platform 1
+var platformImg = new Image();
+platformImg.src = "platform.png";
+
+//platform 2
+var platformImg2 = new Image();
+platformImg2.src = "platform2.png";
+
+var portal1 = new Image();
+portal1.src = "portal.png";
+
+//gems image
+var gem1 = new Image();
+gem1.src = "gem1.png";
+
+var gem2 = new Image();
+gem2.src = "gem2.png";
+
+var gem3 = new Image();
+gem3.src = "gem3.png";
+
+//cactus
+var obstacle1 = new Image();
+obstacle1.src = "cactus.png";
+
+//crystal
+var obstacle2 = new Image();
+obstacle2.src = "crystal.png";
+
+//finish
+var finish = new Image();
+finish.src = "finish.png";
+
+
+//canvas boundary
+var boundary = [];
+
+//left boundary
+boundary.push({
+	x: -1,
+	y: 0,
+	width: 1,
+	height: height
+});
+
+//bottom boundary
+boundary.push({
+	x: 0,
+	y: height - 30,
+	width: width,
+	height: 30
+});
+
+//right boundary
+boundary.push({
+	x: width ,
+	y: 0,
+	width: 1,
+	height: height
+});
+
+boundary.push({
+	x: 0,
+	y: -1,
+	width: width,
+	height: 1
+});
+
+//platforms for level 1 ------------------------------------------------------------------
+var platformL1 = [];
+
+platformL1.push({
+  x: 100,
+  y: 540,
+  width: 40,
+  height: 30
+});
+
+platformL1.push({
+  x: 135,
+  y: 510,
+  width: 40,
+  height: 30
+});
+
+platformL1.push({
+  x: 310,
+  y: 510,
+  width: 40,
+  height: 30
+});
+
+platformL1.push({
+  x: 345,
+  y: 540,
+  width: 40,
+  height: 30
+});
+
+platformL1.push({
+  x: 490,
+  y: 510,
+  width: 60,
+  height: 30
+});
+
+platformL1.push({
+  x: 590,
+  y: 450,
+  width: 40,
+  height: 30
+});
+
+platformL1.push({
+  x: 720,
+  y: 390,
+  width: 40,
+  height: 20
+});
+
+platformL1.push({
+  x: 520,
+  y: 330,
+  width: 60,
+  height: 20
+});
+
+platformL1.push({
+  x: 460,
+  y: 330,
+  width: 60,
+  height: 20
+});
+
+platformL1.push({
+  x: 400,
+  y: 330,
+  width: 60,
+  height: 20
+});
+
+platformL1.push({
+  x: 200,
+  y: 320,
+  width: 40,
+  height: 20
+});
+
+platformL1.push({
+  x: 105,
+  y: 255,
+  width: 30,
+  height: 10
+});
+
+platformL1.push({
+  x: 0,
+  y: 180,
+  width: 30,
+  height: 10
+});
+
+platformL1.push({
+  x: 0,
+  y: 50,
+  width: 60,
+  height: 10
+});
+
+platformL1.push({
+  x: 200,
+  y: 200,
+  width: 30,
+  height: 10
+});
+
+platformL1.push({
+  x: 320,
+  y: 180,
+  width: 60,
+  height: 10
+});
+
+platformL1.push({
+  x: 380,
+  y: 180,
+  width: 60,
+  height: 10
+});
+
+platformL1.push({
+  x: 440,
+  y: 180,
+  width: 60,
+  height: 10
+});
+
+platformL1.push({
+  x: 600,
+  y: 130,
+  width: 40,
+  height: 10
+});
+
+platformL1.push({
+  x: 760,
+  y: 100,
+  width: 40,
+  height: 10
+});
+
+//gems level 1 
+var gemsL1 = [];
+
+gemsL1.push({
+	x: 145,
+	y: 475,
+	width: 30,
+	height:30,
+	score: 200,
+	src: gem1	
+});
+
+gemsL1.push({
+	x: 730,
+	y: 355,
+	width: 30,
+	height:30,
+	score: 300,
+	src: gem2	
+});
+
+gemsL1.push({
+	x: 10,
+	y: 145,
+	width: 30,
+	height:30,
+	score: 500,
+	src: gem3	
+});
+
+gemsL1.push({
+	x: 0,
+	y: 0,
+	width: 0,
+	height: 0,
+	src: gem1,
+	score: 0
+});
+
+//obstacle level 1
+var obst1 = [];
+
+obst1.push({
+	x: 195,
+	y: 540,
+	width: 20,
+	height: 30
+});
+
+obst1.push({
+	x: 240,
+	y: 540,
+	width: 20,
+	height: 30
+});
+
+obst1.push({
+	x: 285,
+	y: 540,
+	width: 20,
+	height: 30
+});
+
+obst1.push({
+	x: 680,
+	y: 540,
+	width: 20,
+	height: 30
+});
+
+obst1.push({
+	x: 470,
+	y: 300,
+	width: 20,
+	height: 30
+});
+
+obst1.push({
+	x: 380,
+	y: 150,
+	width: 20,
+	height: 30
+});
+
+//platforms for level 2----------------------------------------------------------------
+var platformL2 = [];
+
+platformL2.push({
+	x: 700,
+	y: 540,
+	width: 40,
+	height: 30
+});
+
+platformL2.push({
+	x: 610,
+	y: 470,
+	width: 40,
+	height: 30
+});
+
+platformL2.push({
+	x: 700,
+	y: 410,
+	width: 40,
+	height: 20
+});
+
+platformL2.push({
+	x: 530,
+	y: 350,
+	width: 60,
+	height: 20
+});
+
+platformL2.push({
+	x: 470,
+	y: 350,
+	width: 60,
+	height: 20
+});
+
+platformL2.push({
+	x: 410,
+	y: 350,
+	width: 60,
+	height: 20
+});
+
+platformL2.push({
+	x: 320,
+	y: 400,
+	width: 40,
+	height: 20
+});
+
+platformL2.push({
+	x: 190,
+	y: 435,
+	width: 40,
+	height: 20
+});
+
+platformL2.push({
+	x: 100,
+	y: 360,
+	width: 40,
+	height: 20
+});
+
+platformL2.push({
+	x: 0,
+	y: 275,
+	width: 40,
+	height: 10
+});
+
+platformL2.push({
+  x: 0,
+  y: 50,
+  width: 60,
+  height: 10
+});
+
+platformL2.push({
+	x: 180,
+	y: 250,
+	width: 40,
+	height: 10
+});
+
+platformL2.push({
+	x: 460,
+	y: 210,
+	width: 60,
+	height: 10
+});
+
+platformL2.push({
+	x: 340,
+	y: 220,
+	width: 60,
+	height: 10
+});
+
+platformL2.push({
+	x: 600,
+	y: 180,
+	width: 30,
+	height: 10
+});
+
+platformL2.push({
+	x: 690,
+	y: 260,
+	width: 30,
+	height: 10
+});
+
+platformL2.push({
+	x: 770,
+	y: 170,
+	width: 30,
+	height: 10
+});
+
+//gems for level 2
+var gemsL2 = [];
+
+gemsL2.push({
+	x: 705,
+	y: 375,
+	width: 30,
+	height:30,
+	score: 200,
+	src: gem1	
+});
+
+gemsL2.push({
+	x: 5,
+	y: 240,
+	width: 30,
+	height:30,
+	score: 300,
+	src: gem2	
+});
+
+gemsL2.push({
+	x: 693,
+	y: 225,
+	width: 30,
+	height:30,
+	score: 500,
+	src: gem3	
+});
+
+gemsL2.push({
+	x: 360,
+	y: 185,
+	width: 30,
+	height:30,
+	score: 200,
+	src: gem1	
+});
+
+gemsL2.push({
+	x: 0,
+	y: 0,
+	width: 0,
+	height: 0,
+	src: gem1,
+	score: 0
+});
+
+//obstacles level 2
+var obst2 = [];
+
+obst2.push({
+	x: 145,
+	y: 540,
+	width: 30,
+	height: 30
+});
+
+obst2.push({
+	x: 260,
+	y: 540,
+	width: 30,
+	height: 30
+});
+
+obst2.push({
+	x: 395,
+	y: 540,
+	width: 30,
+	height: 30
+});
+
+obst2.push({
+	x: 760,
+	y: 540,
+	width: 30,
+	height: 30
+});
+
+obst2.push({
+	x: 475,
+	y: 320,
+	width: 30,
+	height: 30
+});
+
+obst2.push({
+	x: 415,
+	y: 180,
+	width: 30,
+	height: 30
+});
+
+
+function update(){
+  // check keys
+    if (keys[38] || keys[32]) {
+        // up arrow or space
+      if(!player.jumping){
+       player.jumping = true;
+       player.onGround = false;
+       player.velocityY = -player.speed*2;
+      }
+    }
+    if (keys[39]) {
+        // right arrow
+        if (player.velocityX < player.speed) {             
+            player.velocityX++;  
+            run.src="runR.png";       
+         }     
+    }     
+    if (keys[37]) {         
+        // left arrow         
+        if (player.velocityX > -player.speed) {
+            player.velocityX--;
+            run.src="runL.png";
+        }
+      }
+      //jump right
+     //if (keys[39] && (keys[38] || keys[32])) {
+        //run.src="jump.png";
+     //}  
+
+     //jump left
+     //if (keys[37] && (keys[38] || keys[32])) {
+     //   run.src="jump_rev.png";
+     //}
+    
+ 
+    player.velocityX *= friction;
+ 
+    player.velocityY += gravity;
+ 
+    
+
+    player.onGround = false;
+ 
+  ctx.clearRect(0,0,width,height);
+
+
+
+
+//level 1 ------------------------------------------------------------------------------
+if(level == 1){
+  ctx.drawImage(background, 0, 0, 800, 600);
+  ctx.drawImage(portal1, 760, 30, 40, 70);
+
+  //ctx.fillStyle = "black";
+  ctx.beginPath();
+ 
+ 	//boundary
+	for (var i = 0; i < boundary.length; i++) {
+
+		var dir = collisionCheck(player, boundary[i]);
+
+		if (dir === "l" || dir === "r") {
+    player.velocityX = 0;
+    player.jumping = false;
+	 
+	 }else if (dir === "b") {
+     
+    player.onGround = true;
+    player.jumping = false;
+ 	
+ 	 }else if (dir === "t") {
+    
+    player.velocityY *= -1;
+    
+    }  
+    ctx.drawImage(ground, boundary[i].x, boundary[i].y, boundary[i].width, boundary[i].height);
+
+  }
+
+  //platforms
+  for(var i =0; i <platformL1.length; i++){   
+
+    var dir = collisionCheck(player, platformL1[i]);
+
+    if (dir === "l" || dir === "r") {
+    player.velocityX = 0;
+    player.jumping = false;
+   
+   }else if (dir === "b") {
+     
+    player.onGround = true;
+    player.jumping = false;
+  
+   }else if (dir === "t") {
+    
+    player.velocityY *= -1;
+    
+    }
+    ctx.drawImage(platformImg, platformL1[i].x, platformL1[i].y, platformL1[i].width, platformL1[i].height);
+   
+    }
+
+    //draw obstacles
+    for(var i = 0; i<obst1.length; i++){
+
+    	var thisObst = obst1[i];
+
+    	if (player.x <= (thisObst.x + 30) && thisObst.x <= (player.x + 40) && player.y <= (thisObst.y + 40) && thisObst.y <= (player.y + 60)){
+
+    			score -= 1;
+    	}
+
+    	ctx.drawImage(obstacle1, obst1[i].x, obst1[i].y, obst1[i].width, obst1[i].height);
+    }
+
+    
+    //collect gems
+    for(var i=0; i<gemsL1.length; i++){
+
+    	var thisGem = gemsL1[i];
+
+    	if (player.x <= (thisGem.x + 20) && thisGem.x <= (player.x + 40) && player.y <= (thisGem.y + 20) && thisGem.y <= (player.y + 60)){
+
+    		gemsL1.splice(i,1);
+    		score += thisGem.score;
+
+    	}else{}
+   	 	  		
+    	ctx.drawImage(gemsL1[i].src, gemsL1[i].x, gemsL1[i].y, gemsL1[i].width, gemsL1[i].height);
+
+    }
+
+
+
+
+    //change level
+    if((player.x >= 760) && player.y <= 70){
+    	ctx.clearRect(0, 0, width, height);
+    	level = level +1;
+    	player.x = 5;
+    	player.y = 540;
+    	friction = 0.93;
+    }
+
+  }
+
+//level 2 ----------------------------------------------------------------------
+else if(level == 2){
+
+	ctx.drawImage(background2, 0, 0, 800, 600);
+	ctx.drawImage(finish, 770, 130, 30, 40);
+
+  
+  ctx.beginPath();
+ 
+ 	//boundaries for level 2
+	for (var i = 0; i < boundary.length; i++) {
+
+		var dir = collisionCheck(player, boundary[i]);
+
+		if (dir === "l" || dir === "r") {
+    player.velocityX = 0;
+    player.jumping = false;
+	 
+	 }else if (dir === "b") {
+     
+    player.onGround = true;
+    player.jumping = false;
+ 	
+ 	 }else if (dir === "t") {
+    
+    player.velocityY *= -1;
+    
+    }
+
+    
+    ctx.drawImage(ground2, boundary[i].x, boundary[i].y, boundary[i].width, boundary[i].height);
+
+  }
+
+  //draw platforms for level 2
+  for(var i =0; i <platformL2.length; i++){   
+
+    var dir1 = collisionCheck(player, platformL2[i]);
+
+    if (dir1 === "l" || dir === "r") {
+    player.velocityX = 0;
+    player.jumping = false;
+   
+   }else if (dir1 === "b") {
+     
+    player.onGround = true;
+    player.jumping = false;
+  
+   }else if (dir1 === "t") {
+    
+    player.velocityY *= -1;
+    
+    }
+    ctx.drawImage(platformImg2, platformL2[i].x, platformL2[i].y, platformL2[i].width, platformL2[i].height);
+   
+    }
+
+    //collect gems
+    for(var i=0; i<gemsL2.length; i++){
+
+    	var thisGem2 = gemsL2[i];
+
+    	if (player.x <= (thisGem2.x + 20) && thisGem2.x <= (player.x + 40) && player.y <= (thisGem2.y + 20) && thisGem2.y <= (player.y + 60)){
+
+    		gemsL2.splice(i,1);
+    		score += thisGem2.score;
+
+    	}else{}
+   	 	  		
+    	ctx.drawImage(gemsL2[i].src, gemsL2[i].x, gemsL2[i].y, gemsL2[i].width, gemsL2[i].height);
+
+    }
+
+    for(var i = 0; i<obst2.length; i++){
+
+    	var thisObst2 = obst2[i];
+
+    	if (player.x <= (thisObst2.x + 25) && thisObst2.x <= (player.x + 40) && player.y <= (thisObst2.y + 25) && thisObst2.y <= (player.y + 60)){
+
+    			score -= 2;
+    	}
+
+    	ctx.drawImage(obstacle2, obst2[i].x, obst2[i].y, obst2[i].width, obst2[i].height);
+    }
+
+
+    if((player.x >= 760) && player.y <= 110){
+    	ctx.clearRect(0, 0, width, height);
+    	level = level +1;
+    	
+    }
+
+}
+
+//end of the game
+if(level == 3){
+	ctx.clearRect(0, 0, width, height);
+	//ctx.fill("white");
+	ctx.font = "30px Ariel";
+	ctx.fillText("Congratulations!!",300, 100);
+	ctx.fillText("You have completed the game!",200, 200);
+	ctx.fillText("Your score is: "+ score, 300, 300);
+	ctx.drawImage(run, 380, 460, player.width * 2, player.height *2);
+}
+
+//game over if score is less than 0
+if(score < 0){
+	ctx.clearRect(0, 0, width, height);
+	ctx.font = "30px Ariel";
+	ctx.fillText("Game Over!",340, 200);
+	ctx.fillText("Please reload the page to",270, 300);
+	ctx.fillText("start a new game.",300, 350);
+	score = 0;
+
+}
+
+
+if(player.onGround){
+     player.velocityY = 0;
+}
+ 
+player.x += player.velocityX;
+player.y += player.velocityY;
+ 
+ctx.fill();
+
+  
+  ctx.drawImage(run, player.x, player.y, player.width, player.height);
+
+
+  ctx.font = "20px Courier";
+  ctx.fillText("Score: " + score, 650, 30);
+
+ 
+  requestAnimationFrame(update);
+
+  $.post("gamephp.php", score);
+}
+ 
+document.body.addEventListener("keydown", function(e) {
+    keys[e.keyCode] = true;
+});
+ 
+document.body.addEventListener("keyup", function(e) {
+    keys[e.keyCode] = false;
+});
+ 
+window.addEventListener("click",function(){
+    update();
+});
+
+
+//check for collision between the player and the platforms
+//this allows the player to run and jump on the platforms 
+//I obtained this code from the game tutorial website somethinghitme.com
+//http://www.somethinghitme.com/2013/01/09/creating-a-canvas-platformer-tutorial-part-one/
+function collisionCheck(shapeA, shapeB) {
+
+    var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
+        vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
+
+        hWidths = (shapeA.width / 2) + (shapeB.width / 2),
+        hHeights = (shapeA.height / 2) + (shapeB.height / 2),
+        colDir = null;
+ 
+    
+    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {        
+
+      var oX = hWidths - Math.abs(vX),             
+      oY = hHeights - Math.abs(vY);        
+       if (oX >= oY) {
+            if (vY > 0) {
+                colDir = "t";
+                shapeA.y += oY;
+            } else {
+                colDir = "b";
+                shapeA.y -= oY;
+            }
+        } else {
+            if (vX > 0) {
+                colDir = "l";
+                shapeA.x += oX;
+            } else {
+                colDir = "r";
+                shapeA.x -= oX;
+            }
+        }
+    }
+    return colDir;
+}
+	
+}
+
+function hide(){
+	$("#button").hide();
+	$("#form").hide();
+	$("#title").hide();
+}
+
+</script>
+
+</body>
+
+</html>
